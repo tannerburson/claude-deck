@@ -26,6 +26,16 @@
 		"States": [
 		  { "Image": "imgs/action-icon", "TitleAlignment": "bottom" }
 		]
+	  },
+	  {
+		"UUID": "pro.clever.claudedeck.aggregate",
+		"Name": "Aggregate Status",
+		"Tooltip": "Shows combined status of all Claude Deck sessions; tap to clear finished",
+		"Icon": "imgs/action-icon",
+		"Controllers": ["Keypad"],
+		"States": [
+		  { "Image": "imgs/action-icon", "TitleAlignment": "bottom" }
+		]
 	  }
 	]
   }

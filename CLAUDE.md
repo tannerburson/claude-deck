@@ -26,15 +26,17 @@ Claude Deck is a Stream Deck plugin that provides visual feedback for Claude Cod
 
 ### Key Concepts
 
-- **Tasks**: Claude Code user requests that can be tracked (states: idle, running, completed)
+- **Tasks**: Claude Code user requests that can be tracked (states: idle, running, attention, completed, failed)
 - **Slots**: Individual Stream Deck keys that display task status and project name
-- **Task Pool**: Automatic assignment of tasks to available slots
+- **Task Pool**: Automatic assignment of tasks to available slots. Assignment is best-effort: tasks are tracked even when no key is free, and claim a key later if one frees up
+- **Aggregate keys**: Keys using the `pro.clever.claudedeck.aggregate` action show a rollup of all tracked tasks (pulsating if any running, with running/completed/failed counts as the title); tapping one clears all finished tasks
 
 ### HTTP API Endpoints
 
-- `GET /slots` - Get slot status and availability
-- `POST /start` - Start a task and assign to slot
-- `POST /finish` - Mark task as completed
+- `GET /slots` - Get slot status, availability, and a summary of all tracked tasks
+- `POST /start` - Start a task (running state) and assign to a slot if one is free
+- `POST /attention` - Mark a task as waiting on user input (static amber icon)
+- `POST /finish` - Mark task as completed or failed
 
 ### Build System
 
@@ -47,6 +49,7 @@ Claude Deck is a Stream Deck plugin that provides visual feedback for Claude Cod
 
 - `manifest.json`: Stream Deck plugin metadata and configuration
 - Action UUID: `pro.clever.claudedeck.slot` for task slot keys
+- Action UUID: `pro.clever.claudedeck.aggregate` for aggregate status keys
 
 ## Key Implementation Details
 

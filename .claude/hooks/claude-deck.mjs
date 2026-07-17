@@ -5,7 +5,7 @@ import http from 'http';
 // Configuration constants
 const CLAUDEDECK_PORT = 17880;
 const CLAUDEDECK_HOST = 'localhost';
-const PROJECT_NAME = 'Change Me';
+const PROJECT_NAME = 'Claude';
 
 // Read JSON input from stdin to get hook data
 process.stdin.setEncoding('utf8');
@@ -26,14 +26,18 @@ try {
     // Route based on hook event type
     switch (hook_event_name) {
         case 'UserPromptSubmit':
+        case 'PreToolUse': // resumes "running" after a permission prompt was approved
             await startClaudeDeckService(serviceId, PROJECT_NAME);
             break;
-            
-        case 'Notification':
+
+        case 'Notification': // Claude is waiting on user input
+            await attentionClaudeDeckService(serviceId, PROJECT_NAME);
+            break;
+
         case 'Stop':
             await finishClaudeDeckService(serviceId);
             break;
-            
+
         default:
             console.log(`Unknown hook event: ${hook_event_name}`);
             break;
@@ -52,6 +56,18 @@ async function startClaudeDeckService(sessionId, serviceName) {
 
     return makeHttpRequest('/start', postData, (response) => {
         console.log(`Started ClaudeDeck service "${serviceName}" - assigned: ${response.assignedContext}`);
+    });
+}
+
+// Call ClaudeDeck API to mark the service as needing user attention
+async function attentionClaudeDeckService(sessionId, serviceName) {
+    const postData = JSON.stringify({
+        id: sessionId,
+        name: serviceName
+    });
+
+    return makeHttpRequest('/attention', postData, (response) => {
+        console.log(`ClaudeDeck service "${serviceName}" needs attention - assigned: ${response.assignedContext}`);
     });
 }
 
